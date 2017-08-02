@@ -1,0 +1,14 @@
+{
+  "name": "nodestat2",
+  "version": "2.0.1",
+  "dependencies": {
+    "async": "^2.5.0",
+    "lodash": "^4.17.4"
+  },
+  "engines": {
+    "node": ">= 5.0.0"
+  },
+  "scripts": {
+    "start": "node nodestat.js"
+  }
+}
