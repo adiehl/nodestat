@@ -5,10 +5,12 @@ var fs = require('fs');
 var async = require('async');
 var child_process = require('child_process');
 var _ = require('lodash');
+var program = require('commander');
 
 // variables
 var ignoreUsers = ['root', 'syslog', 'mysql', 'apache', 'message+', 'daemon', 'statd', 'www-data', 'postfix', 'sshd', 'proftpd'];
 var nodestat = {};
+var debug = false;
 
 // functions
 function decodePs(psString) {
@@ -56,6 +58,14 @@ function decodePs(psString) {
 
 
 // program code
+program
+    .option('--debug', 'Debugging options')
+    .parse(process.argv);
+
+if (program.debug) {
+  debug = true;
+}
+
 fs.readFile(__dirname + '/nodes.txt', function(err, file) {
   if (err) {
     throw err;
@@ -65,8 +75,14 @@ fs.readFile(__dirname + '/nodes.txt', function(err, file) {
   async.each(nodes, function(line, callback) {
     var node = line.trim();
     if (node !== '') {
+      if (debug) {
+        console.error('Processing node: ' + node);
+      }
       var cmd = '/usr/bin/ssh ' + node + ' /bin/ps auxx';
       child_process.exec(cmd, function(err, stdout, stderr) {
+          if (debug) {
+              console.error('Got process list of ' + node);
+          }
         var psList = decodePs(stdout);
         var currentNode = {
           'hostname' : node,
@@ -89,6 +105,9 @@ fs.readFile(__dirname + '/nodes.txt', function(err, file) {
       })
     }
   }, function(err) {
+      if (debug) {
+          console.error('Finished');
+      }
     var sorted = _.sortBy(stats, [function(o) { return o.hostname; }]);
     fs.writeFile(__dirname + '/htdocs/nodestat.json', JSON.stringify(sorted));
   })

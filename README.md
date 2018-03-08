@@ -5,8 +5,8 @@ This is a small tool, used for collecting the necessary information from all clu
 # Usage
 ```
 mkdir -p /opt/nodestat
-cd /opt/nodestat
-git clone <repo-url> nodestat
+cd /opt
+git clone https://github.com/adiehl/nodestat.git
 cd nodestat
 npm install
 ```
